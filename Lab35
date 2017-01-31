@@ -1,0 +1,68 @@
+#lang racket
+
+
+;;; Procedure:
+;;;   roll-a-die
+;;; Parameters:
+;;;   None
+;;; Purpose:
+;;;   To simulate the rolling of one six-sided die.
+;;; Produces:
+;;;   An integer between 1 and 6, inclusive.
+;;; Preconditions:
+;;;   [None]
+;;; Postconditions:
+;;;   Returns an integer between 1 and 6, inclusive.
+;;;   It should be difficult (or impossible) to predict which
+;;;     number is produced.
+(define roll-a-die
+  (lambda ()
+    (+
+     (random 6)    ; a value in the range [0 .. 5]
+     1)))          ; now in the range [1 .. 6]
+
+;;; Procedure:
+;;;   roll-dice
+;;; Parameters:
+;;;   n, an integer
+;;; Purpose:
+;;;   Roll n six-sided dice and make a list of their values.
+;;; Produces:
+;;;   rolls, a list of integers
+;;; Preconditions:
+;;;   [No additional]
+;;; Postconditions:
+;;;   (length rolls) = n
+;;;   Each element of rolls is a value between 1 and 6.
+;;;   The values in rolls are reasonably evenly distributed.
+;;;   The values in rolls are difficult to predict.
+(define roll-dice
+  (lambda (n)
+    (if (zero? n)
+        null
+        (cons (roll-a-die) (roll-dice (- n 1))))))
+
+(define pair-a-dice
+  (lambda ()
+    (display "Rolling ...")(newline)
+    (+ (roll-a-die) (roll-a-die))))
+
+(define tally-seven-eleven
+  (lambda (n)
+    (let ([count (pair-a-dice)]) 
+      (cond [(<= n 0) 
+             0]
+            [(or (= count 7) (= count 11))
+             (+ 1 (tally-seven-eleven (- n 1)))]
+            [else 
+             (tally-seven-eleven (- n 1))]))))
+
+(define tally-seven-eleven?
+  (lambda (n)
+    (let ([lst (roll-dice n)]) 
+      (cond [(null? lst) 
+             0]
+            [(or (= (car lst) 7) (= (car lst) 11))
+             (+ 1 (tally-seven-eleven (- n 1)))]
+            [else 
+             (tally-seven-eleven (- n 1))]))))
